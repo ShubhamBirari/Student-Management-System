@@ -24,6 +24,7 @@ def display_temp():
 		temp = wdata['main']['temp']
 		temp2 = wdata['name']
 		msg="You are in "+str(temp2)+"\n Temperature is "+str(temp)+" degree Celcius"
+
 	except OSError:
 		msg="Check your internet connection"
 
@@ -90,8 +91,8 @@ temp_window.after(2000,a2)
 temp_window.after(3000,a3)
 temp_window.after(3010,function)
 
-temp_window.after(6500, lambda: temp_window.destroy())
-root.after(6500,lambda:root.deiconify())
+temp_window.after(7000, lambda: temp_window.destroy())
+root.after(7000,lambda:root.deiconify())
 
 def f1():
 	add_st.deiconify()
