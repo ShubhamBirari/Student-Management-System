@@ -2,8 +2,8 @@ from tkinter import *
 from tkinter import scrolledtext
 from tkinter import messagebox
 from tabulate import tabulate
-from connectDB import *
 import pygame.mixer
+import cx_Oracle
 import time
 import re
 import time
@@ -28,6 +28,18 @@ def display_temp():
 		msg="Check your internet connection"
 
 	return msg
+
+# Make connection to Oracle and handle exception;
+con = None
+cursor = None
+
+try:
+	con = cx_Oracle.connect("system/abc123")
+	print("Connected")
+	cursor = con.cursor()
+
+except cx_Oracle.DatabaseError as e:
+	print("ISSUE "+e)
 
 # Root user interface
 root = Tk()
@@ -76,7 +88,7 @@ def function():
 temp_window.after(1000,a1)
 temp_window.after(2000,a2)
 temp_window.after(3000,a3)
-temp_window.after(3001,function)
+temp_window.after(3010,function)
 
 temp_window.after(6500, lambda: temp_window.destroy())
 root.after(6500,lambda:root.deiconify())
@@ -89,7 +101,6 @@ btn_add = Button(root, text="Add Student", height=2,width=20, command=f1)
 
 #	Navigate to another window when button is clicked
 def f2():	
-	connect_db()
 	view_st.deiconify()
 	root.withdraw()
 	sql = "select * from student order by rno"
@@ -131,7 +142,6 @@ lbl_addname = Label(add_st, text="Enter Name")
 ent_addname = Entry(add_st, bd=2)
 
 def f5():
-	connect_db()
 	# Validate roll number
 	try :
 		num = ent_addrno.get()
@@ -237,7 +247,6 @@ lbl_updatename = Label(update_st, text="Enter new name")
 ent_updatename = Entry(update_st, bd=2)
 
 def f8():
-	connect_db()
 	# Validate roll number
 	try :
 		num = ent_updaterno.get()
@@ -316,7 +325,6 @@ lbl_deleterno = Label(delete_st, text="Enter the roll number to be deleted")
 ent_deleterno = Entry(delete_st, bd=2)
 
 def f10():
-	connect_db()
 	ans = messagebox.askyesno("Exit","Sure you want to delete?")
 	if ans:
 		try :
@@ -366,7 +374,11 @@ delete_st.protocol("WM_DELETE_WINDOW", f11)
 def f12():
 	ans = messagebox.askyesno("Exit","Do you really want to exit?")
 	if ans:
-		disconn_db()
+		if cursor is not None:
+			cursor.close()
+		if con is not None:
+			con.close()
+			print("Disconnected")
 		import sys
 		sys.exit()
 
